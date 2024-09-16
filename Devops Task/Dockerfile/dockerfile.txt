@@ -1,0 +1,7 @@
+# FROM amazonlinux
+# RUN yum update && yum install nginx -y 
+FROM amazonlinux
+RUN yum update && yum install nginx -y
+EXPOSE 80
+#CMD ["./usr/sbin/nginx"] 
+CMD ["nginx", "-g", "daemon off;"]
