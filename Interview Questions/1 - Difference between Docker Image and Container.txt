@@ -1,0 +1,24 @@
+Difference between Docker Image and Container 
+
+-> 1. Docker Image is the Blueprint of the Container.
+   1. Container is an instance of the Image.
+-> 2. Docker Image is created only once.
+   2. Containers are created a number of times using images.
+-> 3. Docker Image is Static template hence Immutable.
+   3. Docker container is Dynamic hence mutable.
+-> 4. Docker Image is less scalable. 
+   4. Docker Container is Highly Scalable.
+-> 5. Created from a Docker file.
+   5. Created from a Docker image. 
+-> 6. Highly portable.
+   6. Less portable than Docker image.
+-> 7. Docker image's contents cannot be modified once it's created means only read-only.
+   7. Throughout their lifecycle, containers can be modified means read-write.
+-> 8. Lightweight.
+   8. Heavier than docker image.
+-> 9. Image-level isolation.
+   9. Process-level isolation.
+-> 10. Images can exist without containers. 
+   10. containers depend on images.
+-> 11. Does not support attaching volumes and networks.
+   11. Supports attaching volumes and networks.

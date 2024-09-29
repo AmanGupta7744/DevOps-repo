@@ -1,0 +1,160 @@
+1. What is Kubernetes?
+-> Kubernetes is open source container orchestration platform that automates deployment , scaling and management of containerized application.
+
+2. What is Kubernetes cluster?
+-> A Kubernetes cluster is a set of node machines for running containerized applications
+
+3. What is Node?
+-> A node is a worker machine where containers are deployed and run 
+
+4. Kubernetes Architecture and working
+-> Pod - A K8s pod is a collection of one or more containers, it is the smallest unit of K8s application
+
+	-> Master Node is also called as Control plane, Master nodes controls and coordinates everything happening in the cluster 
+	   -> API Server - Core component of k8s, accepts all incoming requests, exposes k8s to external world 
+	   -> etcd - its a storage component of k8s which stores the data in key-value pair , it stores the cluster related info
+	   -> Scheduler - A scheduler is responsible for assigning new pods to nodes, it receives info from API Server and acts according to it   
+	   -> Controller Manager - keeps everything running smoothly by managing different controllers 
+				   for example, ReplicaSet controller ensures the specified numbers of pod replicas are running 
+
+	-> Worker Node is also called as Data plane its a server that runs application in containers 
+	   -> kubelet - is used to create Pods, managing them and ensures Pods us is always running 
+	   -> kubeproxy - manages network communication and load balancing between services and uses IP Table 
+	   -> container runtime - runs containers inside pods
+
+-> Working: The Master Node and Worker Nodes communicate through the Kubernetes API Server. Users and other components interact with the cluster through API server 
+	    For ex: when the user deploys application the configuration is sent to API server which then stores it in etcd
+	    The Controller Manager continuously monitors the cluster state through API Server  
+	    When a new pods needs to be scheduled the Scheduler selects appropriate worker node based on resource availability and constraints  
+	    The API server inform the chosen worker node and kubelet then create Pods and run container inside it
+	    The Worker Node report the status of running pods back to Master Node through kubelet   
+
+5. What is Daemon Set and its usecase?
+-> Daemon Set ensures that all or some Nodes run the copy of Pods. If Nodes are added to cluster Pods are also added. If Nodes are removed from the cluster Pods also gets garbage collected  
+-> Deleting the Daemon Set will clean up the Pod it created
+-> Usecase:- Running a cluster storage Daemon on every Node 
+	   - Running a Logs Collection Daemon on every Node
+	   - Running a Node Monitoring Daemon on every Node 
+-> Replicas are not applicable for Daemon Set 
+  
+6. What is Stateful Set and its usecase?
+-> Stateful state in k8s is a way to manage application that need to maintain specific identity and persistent storage. 
+-> Stateful set keeps tracks of the state of each instance of the application
+-> A Stateful Set is ideal for applications that need to remember their identity and maintain state. 
+-> usecase: - Databases ex: MySQL or PostgreSQL
+	    - Message Queues ex: Kafka and RabbitMQ
+	    - Distributed Systems ex: ElasticSearch and Cassandra Cluster   
+
+7. Diff bet ConfigMap and Secrets
+-> 
+Purpose	-> Stores non-confidential data such as configuration settings.	
+	   Stores sensitive/confidential data like passwords, API keys, and tokens.
+
+Data Encoding -> Stores data in plain text (base64 encoding is not applied by default).	
+		 Stores data in base64-encoded format for transport; not encrypted by default but more secure than ConfigMap.
+
+Use Case -> Configuration details like environment variables, application settings, or file paths.	
+	    Sensitive information like passwords, SSL certificates, database credentials, or tokens.
+
+Security Level -> Not designed for sensitive data and not encrypted by default.	
+		  Designed for sensitive data, but still requires proper security controls (e.g., encryption, access restrictions).
+
+Access Control -> Accessed through Kubernetes API, similar to Secrets, but without additional security layers.	
+		  Can be restricted more tightly using Kubernetes Role-Based Access Control (RBAC). More secure due to the sensitive nature of data.
+
+Visibility -> Readable to anyone with access to the namespace where the Config-Map is deployed.	
+	      Requires specific permissions, adding a layer of protection for sensitive information.
+Encryption -> No encryption by default (requires external solutions like encryption at rest).	
+	      Can be encrypted at rest using features like Kubernetes Secrets encryption (enabled through the cluster configuration).
+
+ConfigMap: Non-sensitive configuration data, stored in plain text, easily viewable.
+Secrets: Sensitive information, base64-encoded for basic obscurity, intended for secure data.
+In short, use ConfigMap for general configuration settings and Secrets for sensitive information that needs extra protection!
+
+
+8. Diff bet ReplicaSet and Deployment
+-> 
+Purpose: -> Ensures that a specified number of pod replicas are running at all times.
+	    Manages ReplicaSets and provides declarative updates to applications, making it easier to change configurations.
+
+Pod Management: -> Directly manages the pods, but doesn't offers advanced update strategies 
+		   Controls the deployment lifecycle, including rolling updates, rollback capabilities, and scaling
+
+Use Case: -> Good for ensuring a fixed number of identical pods are running, but lacks higher-level features for version management.
+	     Ideal for managing application lifecycle, including rolling updates and rollbacks.
+
+
+9. What are the condition where Pods get unscheduled?
+-> A pod can remain unscheduled due to resource constraints, affinity/anti-affinity rules, taints and tolerations, unavailability of nodes, storage issues, and various scheduling    
+   constraints.
+
+10. What is  affinity and anti-affinity rules?
+-> Affinity and anti-affinity rules in Kubernetes are used to control how pods are scheduled on nodes.
+-> There are two types of affinity rules  
+-> 1. Node Affinity 2. Pod Affinity 
+-> Affinity rules allow you to specify that certain pods should be scheduled together or on specific nodes based on labels. 
+-> Anti-affinity rules specify that certain pods should not be scheduled together. 
+
+11. What is Taints and Tolerations?
+->  Taints and tolerations are a mechanism that allows you to ensure that pods are not placed on inappropriate nodes. 
+    Taints are added to nodes, while tolerations are defined in the pod specification. 
+    When you taint a node, it will repel all the pods except those that have a toleration for that taint.
+
+10. What is condition where Pods shows CrashLoopBackOff?
+-> CrashLoopBackOff occurs when a pod is repeatedly crashing due to application errors, misconfigurations, resource constraints, dependency failures, failed health checks, image issues, or 
+   file system problems. To troubleshoot, check the pod logs using kubectl logs <pod-name>
+
+11. What are the conditions where Pods is no running?
+-> 
+
+12. Diff bet EntryPoint and cmd?
+
+13. What is commands and args in k8s Manifest?
+
+14. Diff bet commands and args in k8s Manifest
+
+15. Deployment Manifest overview[Yaml file]
+-> 
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  labels:
+    app: nginx
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.14.2
+        ports:
+        - containerPort: 80
+
+-> apiVersion - specifies the version of k8s API that we are using for Deployment 
+	apps/v1 - indicates that we are using version 1 of apps API for Deployment 
+-> kind -  Defines the type of resources we are creating 
+	Deployment: Meaning the manifest is creating a Deployment resource
+-> metadata - contains info about the resources like name, namespaces and labels 
+-> spec - describe the desired state and configuration of Deployment resource like replicas, container image, ports and other settings 
+
+
+What is Custom Role Definition?
+-> CRD is powerful feature that allows us to extend k8s API by defining our custom resources. With CRD one can create and manage their own resource type. 
+
+What is Cluster Role Binding? 
+-> Cluster Role Binding is a resource that allows us to grants permission to users , groups or service accounts for the entire cluster by defining it in ClusterRole.
+
+What is OIDC Provider?
+-> OIDC provider is a service that handles user authentication using the OpenID Connect protocol. OIDC is built on top of OAuth2.0 Framework, allowing application to verify user identity    
+   based on authentication performed by OIDC provider.
+
+What is Ingress Class ?
+-> Ingress class in k8s is a resources that defines the type of ingress controller that should handle ingress resources in cluster.  
+
