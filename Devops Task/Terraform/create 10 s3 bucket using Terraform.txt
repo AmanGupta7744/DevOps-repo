@@ -1,0 +1,18 @@
+provider aws {
+ region = "ap-south-1"
+}
+variable "bucket-names" {
+ type = set(string)
+ default = ["aws-op", "azure-il", "snik-op", "alibaba-uj", "hostinger-ou", "nginx-kl", "httpd-df", "apache2-jk", "oracle-fv", "sman-rf"]
+}
+resource "aws_s3_bucket" "buckets" {
+  for_each = var.bucket-names
+  bucket = each.value
+ tags = {
+  Name = each.value
+}
+}
+
+The variable "bucket_names" block defines a list of bucket names that will be iterated over.
+The for_each block dynamically creates an S3 bucket for each name in the bucket_names list.
+Tags are applied to each bucket, with the Name tag being set to the corresponding bucket name.
